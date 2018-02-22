@@ -1,0 +1,1 @@
+mex -I../externals/armadillo -l../externals/blas_lapack_lib_win64/blas_win64_MT.lib  -l../externals/blas_lapack_lib_win64/lapack_win64_MT.lib mexCalcXtY.cpp
