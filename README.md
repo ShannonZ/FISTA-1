@@ -6,7 +6,7 @@ This repository contains C++ implementation code of the Fast Iterative Shrinkage
 - library developped in C++
 - it is a constraint time development exercise
 - as the FISTA algorithm operates on Matrixes, I used [Armadillo](http://arma.sourceforge.net/) as a library of choice for all matrix operations
-- [Armadillo](http://arma.sourceforge.net/) needs the [LAPACK and the BLAS libraries](http://www.netlib.org/lapack/lug/node11.html). I found only release versions of those libraries for Windows. (important for later).
+- [Armadillo](http://arma.sourceforge.net/) needs the [LAPACK and the BLAS libraries](http://www.netlib.org/lapack/lug/node11.html). I only found **a release** versions of those libraries for Windows. (this is important for later, a debug library would have been of good use).
 
 ## Directory content
 - externals: artifacts needed for my code (Armadillo and Lapack and Blas)
@@ -39,7 +39,7 @@ This is a tricky subject, but there is actually everything in place in the origi
 The development strategy for the spams toolbox is a divide and conquer approach. For each FISTA algorithm elementary function to implement in C++, a matlab test implements the function in Matlab, and compare the result against the C++ implementation called via a mex file.  
 As more and more "elementary" functions are tested, intermediate and more complex functions can be assembled, and tested against Matlab code.
 
-
+Debugging becomes easy as it is possible to step inside the mex code and see what is going on with the Visual Studio debugger. (Attach to process, Matlab). Code needs to be built in debug, I was missing the LAPACK and the BLAS debug libraries.
 
 
 
