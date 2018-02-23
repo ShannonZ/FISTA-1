@@ -6,17 +6,10 @@
 using namespace std;
 using namespace arma;
 
-// Armadillo documentation is available at:
-// http://arma.sourceforge.net/docs.html
-
-
-
-
 // function res = norm1(X)
 // res = full(sum(abs(X(:))));
 // end
 double norm1(mat &X) {
-	//mat Tmp = abs(X);
 	vec v = vectorise(X);
 	vec v2 = abs(v);
 	return (double)sum(v2);
@@ -45,12 +38,11 @@ mat Gradient(mat &X, mat &DtD, mat &DtY)
 // Compute XtY2 = X'*Y;
 mat CalcXtY(mat &X, mat &Y)
 {
-	mat Xt = X.t();
-	mat result = Xt * Y;
-	return result;
+	return X.t() * Y;
 }
 
-
+// fista_lasso.m
+// function X = fista_lasso(Y, D, Xinit, opts)
 mat fista_lasso(mat &Y, mat &D, lasso_options &opts) {
 
 	//if numel(Xinit) == 0
@@ -70,12 +62,13 @@ mat fista_lasso(mat &Y, mat &D, lasso_options &opts) {
 	eig_gen(eigval, eigvec, DtD);
 	max_eigen = eigval.max();
 
-	double L = max_eigen.real();
-
+	double L = max_eigen.real(); // TODO: check in Matlab if eigen values are complex
 	return fista_general(Xinit, DtD, DtY, L, opts);
 
 }
 
+// fista_general.m
+// function[X, iter, min_cost] = fista_general(grad, proj, Xinit, L, opts, calc_F)
 mat fista_general(mat &Xinit, mat &DtD, mat &DtY, double &L, lasso_options &opts) {
 
 	double Linv = 1 / L;
