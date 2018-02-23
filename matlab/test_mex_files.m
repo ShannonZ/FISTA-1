@@ -1,5 +1,8 @@
 %% Bit exactness testing against Matlab
 
+clear all
+addpath('../matlab_fista/')
+
 %% Test X'*Y
 disp("Testing X'*Y")
 
@@ -37,10 +40,33 @@ for c = 1:10
     tmex = tmex + toc;
 
     tic
-    res2 = full(sum(abs(X(:))));
+    res2 = norm1(X);
     tmat=tmat+toc;
     
     diff = abs(res2 - res);
+    if diff > 1.0e-9
+        warning('Error while testing norm1(X)');
+    end
+end
+fprintf('mex-file time: %fs\n',tmex);
+fprintf('matlab-file time: %fs\n\n',tmat);
+
+%% Test proj_l1
+disp("Testing proj_l1(X)")
+tmex = 0;
+tmat = 0;
+for c = 1:10
+    X=randn(64,200);
+    tic
+    res = mat_projl1(X);
+    tmex = tmex + toc;
+
+    tic
+    res2 = mat_projl1(X);
+    tmat = tmat + toc;
+    
+    % diff = abs(res2 - res);
+    diff = sum((res2(:)- res(:)).^2);
     if diff > 1.0e-10
         warning('Error while testing norm1(X)');
     end
@@ -87,4 +113,10 @@ fprintf('matlab-file time: %fs\n\n',tmat);
 %% to be moved in a separate file
 function res = grad(X,DtD,DtY) 
     res = DtD*X - DtY;
+end
+
+function res = mat_projl1(X) 
+    opts.lambda = 0.78;
+    opts.pos = true;
+    res = proj_l1(X,opts);
 end
