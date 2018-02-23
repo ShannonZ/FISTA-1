@@ -60,7 +60,7 @@ As more and more low level functions are tested, intermediate and more complex f
 
 Debugging in this setup becomes easy as it is possible to step inside the mex code and see what is going on with the Visual Studio debugger. (MSVC > Debug > Attach to process -> choose Matlab process). To do this, the code needs to be built in debug mode, mex files and the fista library.
 
-### my approach 
+### Adopted approach 
 I adopted a similar approach in the matlab directory. I have mex files that I can build and test against matlab reference output. Each mex file calls a simple function from the Fista library, and there is a corresponding test to exercise the function in test_mex_files.m.
 - build_mex_files.m: building all mex files
 - test_mex_files.m: testing the fista lib through mex files
