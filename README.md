@@ -21,13 +21,15 @@ This repository contains C++ implementation code of the Fast Iterative Shrinkage
 - [Armadillo](http://arma.sourceforge.net/) needs the [LAPACK and the BLAS libraries](http://www.netlib.org/lapack/lug/node11.html). 
 
 ## Directory content
-- externals: artifacts needed for my code (Armadillo, Lapack and Blas)
+- externals: artifacts needed to build my solution (Armadillo, Lapack and Blas)
+- matlab: matlab test code to check C++ bit exactness against Matlab code
+- matlab_fista: matlab fista lasso reference algorithm 
+- matlab_patch: patch to build mex files with Visual Studio 2017 and Matlab 2017a
 - solutions: microsoft visual studio solution and 2 project files:
     1. fista_lib.vcxproj to build the algorithm  (\*.lib)
     1. mve.vcxproj to build the fistal algo test app (\*.exe)
 - src: the C++ Fista algorithm code
-- matlab: matlab test code to check C++ bit exactness against Matlab code
-- matlab_fista: matlab fista lasso reference algorithm 
+- README.md: this readme
 
 ## Code considerations
 As this is a direct implementation of some Matlab code, and a time constrained exercise, I kept a lot of things from Matlab
@@ -70,9 +72,10 @@ To be sure that my implementation is bit exact, all functions below should be bi
 - [ ] test_fista_lasso();
 
 ## What to do next/still to be done
-- investigate why the mex files needs blas_win64_MT.dll and lapack_win64_MT.dll to run properly
-- improve design in order to pass cost functions, gradiant and projections as functions pointers 
 - check bit-exactness for fista general and fista_lasso
-- testing could be improved. For instance proj_l1 has two parameters, I could also make random permutations for lambda in order to make sure that the function works for any pair of input arguments
+- investigate why the mex files needs blas_win64_MT.dll and lapack_win64_MT.dll to run properly
+- there is a warning when building the C++ code (minor: overlapping directory for output compilation)
+- improve design in order to pass cost functions, gradiant and projections as functions pointers for the fista algorithm
+- testing could be improved. For instance proj_l1 has two parameters, but I test with a fixed value for lambda. I could make random permutations for lambda in order to make sure that the function works for any pair of input arguments
 - better comment. C++ code contains only matlab code as for comment. functions and functions headers should properly be documented, in C/C++ fashion
 - improve porting. Not all code path are implemented in C++. For instance, proj_l1 behaves differently whether the pos parameter is true or not. I only coded the true case, as demo_lasso.m and demo_full.m set the pos parameter to true.
