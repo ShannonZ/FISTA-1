@@ -64,21 +64,20 @@ Debugging in this setup becomes easy as it is possible to step inside the mex co
 I adopted a similar approach in the matlab directory. I have mex files that I can build and test against matlab reference output. Each mex file calls a simple function from the Fista library, and there is a corresponding test to exercise the function in test_mex_files.m.
 - build_mex_files.m: building all mex files
 - test_mex_files.m: testing the fista lib through mex files
+- test_Lasso.m: testing the global lasso algorithm
 
 ### Status
-To be sure that my implementation is bit exact, all functions below should be bit exact. (*Not the case right now*). The checked functions below are verified to be bit-exact.
-- [x] test_CalcXtY();
-- [x] test_Gradient();
-- [x] test_proj_l1();
-- [x] test_norm1();
-- [ ] test_fista_general();
-- [ ] test_fista_lasso();
+To be sure that my implementation is bit exact, all functions below should be bit exact. The checked functions below are verified to be bit-exact.
+- [x] CalcXtY();  *tested in test_mex_files.m*
+- [x] Gradient();  *tested in test_mex_files.m*
+- [x] proj_l1();  *tested in test_mex_files.m*
+- [x] norm1();  *tested in test_mex_files.m*
+- [x] fista_lasso();  **tested in test_Lasso.m**
 
 ## What to do next/still to be done
-- check bit-exactness for fista general and fista_lasso
+- testing could be improved. For instance proj_l1 has two parameters, but I test with a fixed value for lambda. I could make random permutations for lambda in order to make sure that the function works for any pair of input arguments. I could improve testing for much more functions
 - investigate why the mex files needs blas_win64_MT.dll and lapack_win64_MT.dll to run properly
 - there is a warning when building the C++ code (minor: overlapping directory for output compilation)
 - improve design in order to pass cost functions, gradiant and projections as functions pointers for the fista algorithm
-- testing could be improved. For instance proj_l1 has two parameters, but I test with a fixed value for lambda. I could make random permutations for lambda in order to make sure that the function works for any pair of input arguments
 - better comment. C++ code contains only matlab code as for comment. functions and functions headers should properly be documented, in C/C++ fashion
-- improve porting. Not all code path are implemented in C++. For instance, proj_l1 behaves differently whether the pos parameter is true or not. I only coded the true case, as demo_lasso.m and demo_full.m set the pos parameter to true.
+- improve porting. Not all code path are implemented in C++. For instance, proj_l1 behaves differently whether the pos parameter is true or not. I only coded the true case, as demo_lasso.m, demo_full.m and test_Lasso.m set the pos parameter to true.
