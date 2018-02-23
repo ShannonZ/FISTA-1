@@ -29,9 +29,13 @@ fprintf('Testing C++ Lasso implementation against Matlab\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-for c = 1:10
-    X=randn(64,1);
-    D=randn(64,10);
+for c = 1:100
+    d = randi([100 200],1,1);
+    N = randi([10 20],1,1);
+    k = randi([10 20],1,1);
+  
+    X=randn(d,N);
+    D=randn(d,k);
     D=D./repmat(sqrt(sum(D.^2)),[size(D,1) 1]);
     param.lambda=0.15;
     param.pos = true;
