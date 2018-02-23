@@ -1,8 +1,8 @@
 clear all;
 addpath('../matlab_fista/');
-
 randn('seed',0);
-fprintf('test mexLasso\n');
+fprintf('Testing C++ Lasso implementation against Matlab\n');
+
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % % Decomposition of a large number of signals
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -27,13 +27,21 @@ fprintf('test mexLasso\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Regularization path of a single signal 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-X=randn(64,1);
-D=randn(64,10);
-D=D./repmat(sqrt(sum(D.^2)),[size(D,1) 1]);
-param.lambda=0.15;
-param.pos = true;
 
-% [alpha path]=mexLasso(X,D,param);
-X_mat = fista_lasso(X, D, [], param);
-X_mex = mex_fista_lasso(X, D);
-diff = sum((X_mat(:)-X_mex(:)).^2)
+
+for c = 1:10
+    X=randn(64,1);
+    D=randn(64,10);
+    D=D./repmat(sqrt(sum(D.^2)),[size(D,1) 1]);
+    param.lambda=0.15;
+    param.pos = true;
+
+    % [alpha path]=mexLasso(X,D,param);
+    X_mat = fista_lasso(X, D, [], param);
+    X_mex = mex_fista_lasso(X, D);
+    diff = sum((X_mat(:)-X_mex(:)).^2);
+    if diff > 1.0e-20
+        warning('Error while testing lasso function ');
+    end
+end
+
