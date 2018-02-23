@@ -1,3 +1,6 @@
+#ifndef FISTA_HPP
+#define FISTA_HPP
+
 #include <iostream>
 #include <armadillo>
 
@@ -33,3 +36,6 @@ mat fista_general(mat &Xinit, mat &DtD, mat &DtY, double &L, lasso_options &opts
 
 // Fista lasso algorithm
 mat fista_lasso(mat &Y, mat &D, lasso_options &opts);
+
+#endif
+// end of file 
