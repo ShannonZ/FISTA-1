@@ -1,2 +1,3 @@
 mex -I..\src -I../externals/armadillo -l..\solutions\x64\Debug\fista_lib.lib -l../externals/blas_lapack_lib_win64/blas_win64_MT.lib  -l../externals/blas_lapack_lib_win64/lapack_win64_MT.lib mexCalcXtY.cpp
 mex -I..\src -I../externals/armadillo -l..\solutions\x64\Debug\fista_lib.lib -l../externals/blas_lapack_lib_win64/blas_win64_MT.lib  -l../externals/blas_lapack_lib_win64/lapack_win64_MT.lib mexnorm1.cpp
+mex -I..\src -I../externals/armadillo -l..\solutions\x64\Debug\fista_lib.lib -l../externals/blas_lapack_lib_win64/blas_win64_MT.lib  -l../externals/blas_lapack_lib_win64/lapack_win64_MT.lib mexGradiant.cpp
