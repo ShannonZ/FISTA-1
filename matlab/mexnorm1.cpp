@@ -17,14 +17,15 @@
 #include "armaMex.hpp"
 #include "fista.hpp"
 
+
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
 	// Check the number of input arguments.
-	if (nrhs != 2)
+	if (nrhs != 1)
 		mexErrMsgTxt("Incorrect number of input arguments.");
 
 	// Check type of input.
-	if ((mxGetClassID(prhs[0]) != mxDOUBLE_CLASS) || (mxGetClassID(prhs[1]) != mxDOUBLE_CLASS))
+	if ((mxGetClassID(prhs[0]) != mxDOUBLE_CLASS))
 		mexErrMsgTxt("Input must me of type double.");
 
 	// Check if input is real.
@@ -33,16 +34,21 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	// Create matrices X and Y from the first and second argument.
 	mat X = armaGetPr(prhs[0]);
-	mat Y = armaGetPr(prhs[1]);
-
+	
 	// Call c++ Fista library 
-	mat C = CalcXtY(X, Y);
+	double result = norm1(X);
 	
 	// Create the output argument plhs[0] to return result
-	plhs[0] = armaCreateMxMatrix(C.n_rows, C.n_cols);
+	plhs[0] = armaCreateMxMatrix(1, 1);
 
 	// Return C as plhs[0] in Matlab/Octave
-	armaSetPr(plhs[0], C);
+	double *dst_pointer = (double*)mxGetPr(plhs[0]);
+	*dst_pointer = result;
+	//const Type *src_pointer = (Type*)armaMatrix.memptr();
+
+	// std::memcpy(dst_pointer, src_pointer, sizeof(Type)*armaMatrix.n_elem);
+
+	// armaSetPr(plhs[0], result);
 
 	return;
 }

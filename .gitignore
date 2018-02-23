@@ -2,3 +2,4 @@ solutions/x64/Debug/
 solutions/x64/Release/
 .vs/
 matlab/mexCalcXtY.mexw64
+*.asv
