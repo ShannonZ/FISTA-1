@@ -47,7 +47,7 @@ I built a C++ implementation mimicking the Matlab code. The C++ code was built p
 - test_norm1();
 - test_lasso();
 
-The code builds and runs. If something is not tested properly, it probably does not work. Testing my algorithm against the Matlab reference still needs to be completed.  
+The code builds and runs, but bit-exactness needs to be verified. If something is not tested properly, it probably does not work. Testing my algorithm against the Matlab reference still needs to be completed.  
 
 ## Testing against the Matlab reference
 
@@ -61,12 +61,12 @@ As more and more low level functions are tested, intermediate and more complex f
 Debugging in this setup becomes easy as it is possible to step inside the mex code and see what is going on with the Visual Studio debugger. (MSVC > Debug > Attach to process -> choose Matlab process). To do this, the code needs to be built in debug mode, mex files and the fista library.
 
 ### my approach 
-I adopted a similar approach in the matlab directory. I have mex files that I can build and compare against matlab reference output. Each mex file calls a simple function from the Fista library, and there is a corresponding test to exercise the function in test_mex_files.m.
+I adopted a similar approach in the matlab directory. I have mex files that I can build and test against matlab reference output. Each mex file calls a simple function from the Fista library, and there is a corresponding test to exercise the function in test_mex_files.m.
 - build_mex_files.m: building all mex files
 - test_mex_files.m: testing the fista lib through mex files
 
 ### Status
-To be sure that my implementation is bit exact, all functions below should be bit exact. (Not the case right now).
+To be sure that my implementation is bit exact, all functions below should be bit exact. (*Not the case right now*). The checked functions below are verified to be bit-exact.
 - [x] test_CalcXtY();
 - [x] test_Gradient();
 - [x] test_proj_l1();
