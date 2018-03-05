@@ -18,7 +18,8 @@ void test_norm1() {
 void test_proj_l1() {
 	mat U(100, 70);
 	double lambda = 0.78;
-	mat result = proj_l1(U, lambda);
+	bool pos = true;
+	mat result = proj_l1(U, lambda, pos);
 }
 
 
@@ -51,39 +52,49 @@ void test_CalcXtY() {
 
 void test_lasso() {
 
-	// d = 10; 	% data dimension
-	//	N = 20; 	% number of samples
-	//	k = 30; 	% dictionary size
-	//	lambda = 0.01;
-	// Y = normc(rand(d, N));
-	// D = normc(rand(d, k));
+	using milli = std::chrono::milliseconds;
+	auto start = std::chrono::high_resolution_clock::now();
 	
-	int d = 10; 	// % data dimension
-	int N = 20; 	// % number of samples
-	int k = 30; 	// % dictionary size
-	double lambda = 0.01;
+	for (int i = 0; i < 100; i++) {
+		// d = 10; 	% data dimension
+		//	N = 20; 	% number of samples
+		//	k = 30; 	% dictionary size
+		//	lambda = 0.01;
+		// Y = normc(rand(d, N));
+		// D = normc(rand(d, k));
 
-	mat a = randu<mat>(d, N);
-	mat b = randu<mat>(d, k);
+		int d = 10; 	// % data dimension
+		int N = 20; 	// % number of samples
+		int k = 30; 	// % dictionary size
+		double lambda = 0.01;
 
-	mat Y = normalise(a);
-	mat D = normalise(b);
+		mat a = randu<mat>(d, N);
+		mat b = randu<mat>(d, k);
 
-	lasso_options opt;
-	
-	opt.lambda = 0.01;
-	opt.max_iterations = 500;
-	opt.tolerance = 1e-8;
-	
-	fista_lasso(Y, D, opt);
+		mat Y = normalise(a);
+		mat D = normalise(b);
+
+		lasso_options opt;
+
+		opt.lambda = 0.01;
+		opt.max_iterations = 500;
+		opt.tolerance = 1e-8;
+
+		fista_lasso(Y, D, opt);
+
+	}
+	auto finish = std::chrono::high_resolution_clock::now();
+	std::cout << "fista_lasso() took "
+		<< std::chrono::duration_cast<milli>(finish - start).count()
+		<< " milliseconds\n";
 
 }
 
 void test_all() {
-	test_CalcXtY();
-	test_Gradient();
-	test_proj_l1();
-	test_norm1();
+	//test_CalcXtY();
+	//test_Gradient();
+	//test_proj_l1();
+	//test_norm1();
 	test_lasso();
 }
 
