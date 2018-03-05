@@ -61,18 +61,25 @@ disp("Testing proj_l1(X)")
 tmex = 0;
 tmat = 0;
 for c = 1:10
+    
+    % Generating random input
+    lambda = rand(1,1);
     X=randn(64,200);
+    pos = randi([0,1]);
+    
     tic
-    res = mat_projl1(X);
+    res = mex_projl1(X,lambda, pos);
     tmex = tmex + toc;
-
-    tic
-    res2 = mat_projl1(X);
+   
+    opts.lambda = lambda;
+    opts.pos = pos;
+    tic;
+    res2 = proj_l1(X,opts);
     tmat = tmat + toc;
     
     % diff = abs(res2 - res);
     diff = sum((res2(:)- res(:)).^2);
-    if diff > 1.0e-10
+    if diff > 1.0e-20
         warning('Error while testing norm1(X)');
     end
 end
@@ -100,7 +107,7 @@ for c = 1:10
 
     tic
     mexGradX=mexGradiant(X,DtD,DtY);
-    tmex = tmex + toc;;
+    tmex = tmex + toc;
 
     tic
     GradX=grad(X,DtD,DtY);
@@ -120,8 +127,3 @@ function res = grad(X,DtD,DtY)
     res = DtD*X - DtY;
 end
 
-function res = mat_projl1(X) 
-    opts.lambda = 0.78;
-    opts.pos = true;
-    res = proj_l1(X,opts);
-end

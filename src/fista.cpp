@@ -16,11 +16,20 @@ double norm1(mat &X) {
 }
 
 // X = max(0, U - lambda);
-mat proj_l1(mat &U, double &lambda)
+mat proj_l1(mat &U, double lambda, bool pos)
 {
-	mat t = U - lambda;
-	mat zeros = mat(t.n_rows, t.n_cols, fill::zeros);
-	return arma::max(zeros, t);
+	if (pos) {
+		mat t = U - lambda;
+		mat zeros = mat(t.n_rows, t.n_cols, fill::zeros);
+		return arma::max(zeros, t);
+	}
+	else {
+		mat t = U - lambda;
+		mat t2 = U + lambda;
+		mat zeros = mat(t.n_rows, t.n_cols, fill::zeros);
+		mat zeros2 = mat(t.n_rows, t.n_cols, fill::zeros);
+		return arma::max(zeros, t) + arma::min(zeros, t2);
+	}
 }
 
 
@@ -45,6 +54,8 @@ mat CalcXtY(mat &X, mat &Y)
 // function X = fista_lasso(Y, D, Xinit, opts)
 mat fista_lasso(mat &Y, mat &D, lasso_options &opts) {
 
+	mat result = mat();
+
 	//if numel(Xinit) == 0
 	//	Xinit = zeros(size(D, 2), size(Y, 2));
 	//end
@@ -64,7 +75,6 @@ mat fista_lasso(mat &Y, mat &D, lasso_options &opts) {
 
 	double L = max_eigen.real(); // TODO: check in Matlab if eigen values are complex
 	return fista_general(Xinit, DtD, DtY, L, opts);
-
 }
 
 // fista_general.m
@@ -93,7 +103,7 @@ mat fista_general(mat &Xinit, mat &DtD, mat &DtY, double &L, lasso_options &opts
 		// FIRST ,compute y_old - Linv*feval(grad, y_old)
 		grad = y_old - Linv*Gradient(y_old, DtD, DtY);
 		// Then do the projection 
-		x_new = proj_l1(grad, lambdaLiv);
+		x_new = proj_l1(grad, lambdaLiv, opts.pos);
 
 		// t_new = 0.5*(1 + sqrt(1 + 4 * t_old ^ 2));
 		t_new = 0.5*(1 + sqrt(1 + 4 * pow(t_old, 2)));

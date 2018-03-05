@@ -21,7 +21,7 @@
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
 	// Check the number of input arguments.
-	if (nrhs != 1)
+	if (nrhs != 3)
 		mexErrMsgTxt("Incorrect number of input arguments.");
 
 	// Check type of input.
@@ -32,13 +32,20 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if ((mxIsComplex(prhs[0])) || (mxIsComplex(prhs[1])))
 		mexErrMsgTxt("Input must be real.");
 
-	// Create matrices X and Y from the first and second argument.
+	// Create matrices X and lambda value from the first and second mex argument.
 	mat X = armaGetPr(prhs[0]);
-	
-	// Call c++ Fista library 
-	double lamda = 0.78;
-	mat C = proj_l1(X, lamda);
+	double lambda = armaGetScalar<double>(prhs[1]);
+	int pos = armaGetScalar<int>(prhs[2]);
 
+	// Call function under test
+	mat C = mat();
+	if (pos) {
+		C = proj_l1(X, lambda, true);
+	}
+	else {
+		C = proj_l1(X, lambda, false);
+	}
+	
 	// Create the output argument plhs[0] to return result
 	plhs[0] = armaCreateMxMatrix(C.n_rows, C.n_cols);
 

@@ -11,6 +11,7 @@ struct lasso_options {
 	double lambda;
 	double tolerance;
 	int max_iterations;
+	bool pos;
 };
 
 // function res = norm1(X)
@@ -19,7 +20,7 @@ struct lasso_options {
 double norm1(mat &X);
 
 // X = max(0, U - lambda);
-mat proj_l1(mat &U, double &lambda);
+mat proj_l1(mat &U, double lambda, bool pos);
 
 // DtD = D'*D;
 // DtY = D'*Y;

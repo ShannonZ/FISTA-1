@@ -6,7 +6,7 @@ fprintf('Testing C++ Lasso implementation against Matlab\n');
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % % Decomposition of a large number of signals
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% % Data are generated
+% Data are generated
 % X=randn(100,100000);
 % X=X./repmat(sqrt(sum(X.^2)),[size(X,1) 1]);
 % D=randn(100,200);
@@ -28,24 +28,35 @@ fprintf('Testing C++ Lasso implementation against Matlab\n');
 % Regularization path of a single signal 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-for c = 1:100
-    d = randi([100 200],1,1);
-    N = randi([10 20],1,1);
-    k = randi([10 20],1,1);
+tmex = 0;
+tmat = 0;
+for c = 1:10000
+    d = randi([100 2000],1,1);
+    N = randi([10 200],1,1);
+    k = randi([10 200],1,1);
   
     X=randn(d,N);
     D=randn(d,k);
     D=D./repmat(sqrt(sum(D.^2)),[size(D,1) 1]);
-    param.lambda=0.15;
-    param.pos = true;
 
+    param.lambda = rand(1,1);
+    param.pos    = randi([0,1]);
+   
     % [alpha path]=mexLasso(X,D,param);
+    tic;
     X_mat = fista_lasso(X, D, [], param);
-    X_mex = mex_fista_lasso(X, D);
+    tmat = tmat + toc;
+    
+    tic;
+    X_mex = mex_fista_lasso(X, D, param.lambda, param.pos);
+    tmex = tmex + toc;    
+    
     diff = sum((X_mat(:)-X_mex(:)).^2);
-    if diff > 1.0e-20
+    if diff > 1.0e-25
         warning('Error while testing lasso function ');
     end
 end
+
+fprintf('mex-file time: %fs\n',tmex);
+fprintf('matlab-file time: %fs\n\n',tmat);
 

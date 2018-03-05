@@ -20,7 +20,7 @@
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
 	// Check the number of input arguments.
-	if (nrhs != 2)
+	if (nrhs != 4)
 		mexErrMsgTxt("Incorrect number of input arguments.");
 
 	// Check type of input.
@@ -34,10 +34,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	// Create matrices X and Y from the first and second argument.
 	mat X = armaGetPr(prhs[0]);
 	mat D = armaGetPr(prhs[1]);
+	double lambda = armaGetScalar<double>(prhs[2]);
+	int pos = armaGetScalar<int>(prhs[3]);
 
 	// Call c++ Fista library 
 	lasso_options opts;
-	opts.lambda = 0.15;
+	opts.lambda = lambda;
+	opts.pos = pos;
 	opts.tolerance = 1e-8;
 	opts.max_iterations = 500;
 
