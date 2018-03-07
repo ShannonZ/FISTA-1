@@ -34,7 +34,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	// Create matrices X and Y from the first and second argument.
 	mat X = armaGetPr(prhs[0]);
 	mat Y = armaGetPr(prhs[1]);
+#ifdef OPTIMIZE
+	
+	// Call c++ Fista library 
+	mat C = mat();
+	CalcXtY(C, X, Y);
 
+	// Create the output argument plhs[0] to return result
+	plhs[0] = armaCreateMxMatrix(C.n_rows, C.n_cols);
+
+	// Return C as plhs[0] in Matlab/Octave
+	armaSetPr(plhs[0], C);
+
+#else
 	// Call c++ Fista library 
 	mat C = CalcXtY(X, Y);
 	
@@ -43,6 +55,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	// Return C as plhs[0] in Matlab/Octave
 	armaSetPr(plhs[0], C);
-
+#endif
 	return;
 }

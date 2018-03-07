@@ -43,8 +43,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	opts.pos = pos;
 	opts.tolerance = 1e-8;
 	opts.max_iterations = 500;
-
+#ifdef OPTIMIZE
+	mat C = mat();
+	fista_lasso(C, X, D, opts);
+#else
 	mat C = fista_lasso(X, D, opts);
+#endif
 	
 	// Create the output argument plhs[0] to return result
 	plhs[0] = armaCreateMxMatrix(C.n_rows, C.n_cols);

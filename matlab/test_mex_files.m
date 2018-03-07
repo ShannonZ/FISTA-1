@@ -1,6 +1,7 @@
 %% Bit exactness testing against Matlab
 
 clear all;
+randn('seed',0);
 
 % Making sure needed dlls are present next to mex files
 copyfile ../externals/blas_lapack_lib_win64/blas_win64_MT.dll .
@@ -12,5 +13,6 @@ test_XtY();
 test_norm1();
 test_proj_l1();
 test_gradiant();
+test_Lasso();
 
 

@@ -1,8 +1,9 @@
 %% Test proj_l1
 disp("Testing proj_l1(X)")
 tmex = 0;
+tmex_opt = 0;
 tmat = 0;
-for c = 1:1000
+for c = 1:10000
     
     % Generating random input    
     d = randi([100 2000],1,1);
@@ -16,7 +17,11 @@ for c = 1:1000
     tic
     res = mex_projl1(X, lambda, pos);
     tmex = tmex + toc;
-   
+    
+    tic
+    res = mex_projl1_opt(X, lambda, pos);
+    tmex_opt = tmex_opt + toc;   
+    
     % call Matlab implementation
     opts.lambda = lambda;
     opts.pos = pos;
@@ -31,5 +36,6 @@ for c = 1:1000
     end
 end
 fprintf('mex-file time: %fs\n',tmex);
+fprintf('mex-file opt time: %fs\n',tmex_opt);
 fprintf('matlab-file time: %fs\n',tmat);
 fprintf('ratio = : %f\n\n',(tmex/tmat));

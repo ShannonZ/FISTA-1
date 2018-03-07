@@ -2,9 +2,10 @@
 disp("Testing Gradiant")
 
 tmex = 0;
+tmex_opt = 0;
 tmat = 0;
 
-for c = 1:1000
+for c = 1:10000
     
     %
     % generate random input
@@ -25,6 +26,10 @@ for c = 1:1000
     mexGradX = mexGradiant(X,DtD,DtY);
     tmex = tmex + toc;
     
+    tic
+    res = mexGradiant_opt(X,DtD,DtY);
+    tmex_opt = tmex_opt + toc;  
+    
     % test Matlab implementation
     tic
     GradX = grad(X,DtD,DtY);
@@ -37,6 +42,7 @@ for c = 1:1000
     end
 end
 fprintf('mex-file time: %fs\n',tmex);
+fprintf('mex-file opt time: %fs\n',tmex_opt);
 fprintf('matlab-file time: %fs\n',tmat);
 fprintf('ratio = : %f\n\n',(tmex/tmat));
 

@@ -1,11 +1,11 @@
 # FISTA
-This repository contains a C++ code implementation of the Fast Iterative Shrinkage/Thresholding Algorithm.
+This repository contains a C++ code implementation of the Fast Iterative Shrinkage/Thresholding Algorithm using the [Armadillo](http://arma.sourceforge.net/) library.
 
 ## Tooling
 - Windows 10
 - Microsoft Visual Studio Community 2017
 - Matlab R2017a
-- mex setup to compile with Microsoft Visual Studio Community 2017, patch availaible in directory matlab_patch/
+- mex setup to compile with Microsoft Visual Studio Community 2017, patch available in directory matlab_patch/
 
 ## Building/Running the code
 1. build the Microsoft Visual Studio solution Fista.sln
@@ -15,7 +15,7 @@ This repository contains a C++ code implementation of the Fast Iterative Shrinka
 
 ## Considerations
 - The software builds for Windows, with Microsoft Visual Studio Community 2017 as a build platform, assuming that Windows being the platform of choice at midx
-- library developped in C++
+- library developed in C++
 - This is a **time constrained** development exercise
 - as the FISTA algorithm operates on Matrixes, I used [Armadillo](http://arma.sourceforge.net/) as a library of choice for all matrix operations in C++
 - [Armadillo](http://arma.sourceforge.net/) needs the [LAPACK and the BLAS libraries](http://www.netlib.org/lapack/lug/node11.html). 
@@ -78,6 +78,101 @@ To be sure that my implementation is bit exact, all functions below should be bi
 - testing could be improved. For instance proj_l1 has two parameters, but I test with a fixed value for lambda. I could make random permutations for lambda in order to make sure that the function works for any pair of input arguments. I could improve testing for much more functions
 - investigate why the mex files needs blas_win64_MT.dll and lapack_win64_MT.dll to run properly
 - there is a warning when building the C++ code (minor: overlapping directory for output compilation)
-- improve design in order to pass cost functions, gradiant and projections as functions pointers for the fista algorithm
+- improve design in order to pass cost functions, gradient and projections as functions pointers for the fista algorithm
 - better comment. C++ code contains only matlab code as for comment. functions and functions headers should properly be documented, in C/C++ fashion
 - improve porting. Not all code path are implemented in C++. For instance, proj_l1 behaves differently whether the pos parameter is true or not. I only coded the true case, as demo_lasso.m, demo_full.m and test_Lasso.m set the pos parameter to true.
+
+# Rework after review comments - 3/9/2018
+
+## Changes since last delivery
+- all functions have a single Matlab test file, to compare against its matlab implementation, please see matlab\test_mex_files.m
+- completed C++ proj_l1() function, passing lambda and pos parameter
+- C++ code optimized, under OPTIMIZE compiler define
+- profiling against Matlab version done
+
+### Bit exactness
+- test_lasso.m exercises the lasso algorithm over 1000 random permutations,
+parameters lambda, pos, matrix sizes are picked randomly at each permutation.
+
+Whatever are the input parameters, C++ and Matlab solutions are so similar that when subtracting the two solutions, taking the square and summing all elements, it is never larger than 1.0e-20. 
+
+Other C++ functions are tested in the same way for bit exactness.
+
+### Unit testing
+I added a unit testing project in the solution, please see FISTA\solutions\unit_testing.  
+There are two tests for the proj_l1 function, one in the normal case, one with lambda not comprised between 0 and 1. We make sure the code throws an exception for out of range parameters.   
+Still to do/fix:  
+- Other tests for other functions and parameters need to be added.
+- Exception should be under DEBUG compiler define.
+- unit testing does not work for all configurations, to be looked into !
+
+## Optimizing the code and profiling against Matlab
+
+### Optimization
+The compiler switch OPTIMIZE has been added in the code and 2 new configurations have been added to the solution:
+- DebugOpt: similar to debug, but with OPTIMIZE flag provided
+- ReleaseOpt: similar to release, but with OPTIMIZE flag provided
+
+The following optimizations have been made in the C++ code:
+- functions return their output using a reference as an output parameter
+- division by x_new.n_elem does not have to be done at each iteration and can be incorporated in the tolerance comparison.
+-  t_new = 0.5*(1 + sqrt(1 + 4 * pow(t_old, 2))) has been changed into  
+t_new = 0.5 + sqrt(0.25 +  pow(t_old, 2));
+
+### Profiling against Matlab
+Profiling C++ code against Matlab is done with different input. Respective input are random, but have similar sized matrices.
+
+### Matlab 
+#### profiling the lasso algorithm
+In profile_lasso.m, call fista_lasso() 10000 times with same parameters. 
+It takes 89.11 seconds.
+
+### profiling initial C++ code
+In test_fista.cpp, the test_lasso() function does the same thing as profile_lasso.m.
+
+Steps to reproduce:
+1. Open the solution
+1. Builds fista_test in Release configuration
+1. Builds fista_test in ReleaseOpt configuration
+1. Go to FISTA\solutions\x64\Release
+1. execute in a shell fista_test.exe
+    - initial version: 32.86 seconds (2.71 faster than Matlab)
+1. Go to FISTA\solutions\x64\ReleaseOpt
+1. execute in a shell fista_test.exe
+    - optimized version (under OPTIMIZE switch): 29.90 seconds (2.98 times faster than Matlab, roughly 10% faster than the non optimized version)
+
+### Profiling the code with a profiler
+Visual Studio code has a built-in profiler: Menu Debug > Performance Profiler 
+When profiling the Debug Opt configuration, and sorting functions by self-time, 
+I got the following results:  
+![results](profiling_results/profile.png)
+
+There is not so much to do there for gradient() and proj(). There is also a lot time spent inside the blas dll.
+
+### Results
+
+C++ code performance is ok, around 3 times faster than Matlab. This is acceptable, but may be not as fast as expected.
+
+### Going further
+
+#### Matlab
+Despite being an interpreted language, Matlab is not ridiculously slow. It is heavily optimized, all matrix operations being done with the AVX2 instruction set: https://nl.mathworks.com/support/sysreq.html
+
+#### Armadillo
+Armadillo uses Lapack, and the Lapack implementation provided with Armadillo might not be as optimized as necessary. From the Armadillo authors:
+> The folder "examples/lib_win64" contains reference LAPACK and BLAS libraries > compiled for 64 bit Windows. The compilation was done by a third party. USE AT YOUR OWN RISK. The compiled versions of LAPACK and BLAS were obtained from:
+> http://ylzhao.blogspot.com.au/2013/10/blas-lapack-precompiled-binaries-for.html
+
+Intel MKL contains a LAPACK library, seems heavily optimized and could be used as a one to one replacement to check if performance is not better.
+
+Armadillo can also be linked against [NVBLAS](http://docs.nvidia.com/cuda/nvblas/), a GPU-accelerated implementation of BLAS.
+
+#### Other software
+I made the choice of using Armadillo to favor ease of porting to C++. Because Armadillo authors use function names similar to Matlab, the porting was easy and straightforward. Other libraries might provide better performances at the cost of a higher porting effort. This is a tradeoff.
+
+Last resort should be to write manually GPU code. This is probably something we want to try at the last moment, for very critical pieces of code. 
+
+
+
+
+

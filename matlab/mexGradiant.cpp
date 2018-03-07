@@ -36,14 +36,22 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	mat DtD = armaGetPr(prhs[1]);
 	mat DtY = armaGetPr(prhs[2]);
 
+#ifdef OPTIMIZE
+	mat *C = new mat();
+	Gradient(*C,X, DtD, DtY);
+	// Create the output argument plhs[0] to return result
+	plhs[0] = armaCreateMxMatrix(C->n_rows, C->n_cols);
+	// Return C as plhs[0] in Matlab/Octave
+	armaSetPr(plhs[0], *C);
+#else
 	// Call c++ Fista library 
 	mat C = Gradient(X, DtD, DtY);
-	
 	// Create the output argument plhs[0] to return result
 	plhs[0] = armaCreateMxMatrix(C.n_rows, C.n_cols);
-
 	// Return C as plhs[0] in Matlab/Octave
 	armaSetPr(plhs[0], C);
+#endif	
+
 
 	return;
 }

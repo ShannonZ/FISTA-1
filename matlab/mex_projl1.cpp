@@ -37,6 +37,21 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	double lambda = armaGetScalar<double>(prhs[1]);
 	int pos = armaGetScalar<int>(prhs[2]);
 
+#ifdef OPTIMIZE
+	mat *C = new mat();
+	if (pos) {
+		proj_l1(X, *C, lambda, true);
+	}
+	else {
+		proj_l1(X, *C, lambda, false);
+	}
+
+	// Create the output argument plhs[0] to return result
+	plhs[0] = armaCreateMxMatrix(C->n_rows, C->n_cols);
+
+	// Return C as plhs[0] in Matlab/Octave
+	armaSetPr(plhs[0], *C);
+#else
 	// Call function under test
 	mat C = mat();
 	if (pos) {
@@ -51,6 +66,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	// Return C as plhs[0] in Matlab/Octave
 	armaSetPr(plhs[0], C);
-
+#endif
 	return;
 }
