@@ -91,7 +91,7 @@ To be sure that my implementation is bit exact, all functions below should be bi
 - profiling against Matlab version done
 
 ### Bit exactness
-- test_lasso.m exercises the lasso algorithm over 1000 random permutations,
+test_lasso.m exercises the lasso algorithm over 1000 random permutations,
 parameters lambda, pos, matrix sizes are picked randomly at each permutation.
 
 Whatever are the input parameters, C++ and Matlab solutions are so similar that when subtracting the two solutions, taking the square and summing all elements, it is never larger than 1.0e-20. 
@@ -100,7 +100,10 @@ Other C++ functions are tested in the same way for bit exactness.
 
 ### Unit testing
 I added a unit testing project in the solution, please see FISTA\solutions\unit_testing.  
-There are two tests for the proj_l1 function, one in the normal case, one with lambda not comprised between 0 and 1. We make sure the code throws an exception for out of range parameters.   
+There are 2 tests for the proj_l1 function:
+1. normal test case
+1. test case with lambda not comprised between 0 and 1. We make sure the code throws an exception for out of range parameters.  
+
 Still to do/fix:  
 - Other tests for other functions and parameters need to be added.
 - Exception should be under DEBUG compiler define.
@@ -147,7 +150,7 @@ When profiling the Debug Opt configuration, and sorting functions by self-time,
 I got the following results:  
 ![results](profiling_results/profile.png)
 
-There is not so much to do there for gradient() and proj(). There is also a lot time spent inside the blas dll.
+There is not so much I can do for gradient() and proj(), they are optimized. There is also a lot time spent inside the blas dll.
 
 ### Results
 
@@ -163,14 +166,14 @@ Armadillo uses Lapack, and the Lapack implementation provided with Armadillo mig
 > The folder "examples/lib_win64" contains reference LAPACK and BLAS libraries > compiled for 64 bit Windows. The compilation was done by a third party. USE AT YOUR OWN RISK. The compiled versions of LAPACK and BLAS were obtained from:
 > http://ylzhao.blogspot.com.au/2013/10/blas-lapack-precompiled-binaries-for.html
 
-Intel MKL contains a LAPACK library, seems heavily optimized and could be used as a one to one replacement to check if performance is not better.
+[Intel MKL](https://software.intel.com/en-us/mkl) contains a LAPACK library, seems heavily optimized and could be used as a one to one replacement to check if performance is not better.
 
 Armadillo can also be linked against [NVBLAS](http://docs.nvidia.com/cuda/nvblas/), a GPU-accelerated implementation of BLAS.
 
 #### Other software
 I made the choice of using Armadillo to favor ease of porting to C++. Because Armadillo authors use function names similar to Matlab, the porting was easy and straightforward. Other libraries might provide better performances at the cost of a higher porting effort. This is a tradeoff.
 
-Last resort should be to write manually GPU code. This is probably something we want to try at the last moment, for very critical pieces of code. 
+Last resort should be to write manually GPU code. This is probably something we want to try at the last moment, only for critical pieces of code. 
 
 
 
